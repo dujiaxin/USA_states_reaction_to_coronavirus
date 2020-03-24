@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>US States Reaction to Coronavirus</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body,
+    text {
+      font-family: sans-serif;
+      font-size: 14px;
+    }
 
+    .capital:hover {
+      stroke: #7A7A7A;
+      stroke-width: 1.5;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: #fff;
+      pointer-events: none;
+      padding: 8px 12px;
+      -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+      -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    }
+  </style>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+  <script>
+    var margin = { top: 30, right: 30, bottom: 30, left: 30 };
+    var width = 960 - margin.left - margin.right;
+    var height = 560 - margin.top - margin.bottom;
+
+    var projection = d3.geoAlbersUsa();
+    var geoPath = d3.geoPath(projection);
+
+    var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip");
+
+    Promise
+      .all([
+        d3.json("us-states.json"),
+        d3.json("us-state-capitals.json")
+      ])
+      .then(function(data) {
+        var states = data[0];
+        var capitals = data[1];
+
+        projection.fitSize([width, height], states)
+
+        svg.append("g")
+          .attr("class", "states")
+          .selectAll("path") 
+          .data(states.features)
+          .enter().append("path")
+          .attr("class", "state")
+          .attr("stroke", "#7A7A7A")
+          .attr("fill", "#EDEDED")
+          .attr("d", geoPath);
+
+        svg.append("g")
+          .attr("class", "capitals")
+          .selectAll("circle")
+          .data(capitals)
+          .enter().append("circle")
+          .attr("class", "capital")
+          .attr("fill", "steelblue")
+          .each(function(d) {
+            var pos = projection([d.lon, d.lat]);
+            d.cx = pos[0];
+            d.cy = pos[1];
+          })
+          .attr("cx", function(d) {
+            return d.cx;
+          })
+          .attr("cy", function(d) {
+            return d.cy;
+          })
+          .attr("r", 4.5)
+          .on("mouseover", showTooltip)
+          .on("mouseout", hideTooltip);
+      });
+
+    function showTooltip(d) {
+      var html = "<span>" + d.city + "</span>, <span>" + d.state + "</span>";
+      tooltip.html(html);
+      tooltip
+        .style("left", window.pageXOffset + d3.event.x + 12 + "px")
+        .style("top", window.pageYOffset + d3.event.y + 12 + "px")
+        .transition()
+        .style("opacity", 1);
+    }
+
+    function hideTooltip() {
+      tooltip
+        .transition()
+        .style("opacity", 0);
+    }
+
+  </script>
+</body>
+</html>
