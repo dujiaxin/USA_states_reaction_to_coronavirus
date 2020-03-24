@@ -57,7 +57,7 @@
     Promise
       .all([
         d3.json("us-states.json"),
-        d3.json("us-state-capitals.json")
+        d3.json("r.json")
       ])
       .then(function(data) {
         var states = data[0];
@@ -99,7 +99,8 @@
       });
 
     function showTooltip(d) {
-      var html = "<span>" + d.city + "</span>, <span>" + d.state + "</span>";
+      var html = "<span>" + d.city + "</span>, <span>" + d.state + ":</span>, <span>"
+      + d.lockdown_method + "</span>";
       tooltip.html(html);
       tooltip
         .style("left", window.pageXOffset + d3.event.x + 12 + "px")
