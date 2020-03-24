@@ -25,6 +25,7 @@
       -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
       -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
       box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+      max-width: 30%;
     }
   </style>
   <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -99,14 +100,14 @@
       });
 
     function showTooltip(d) {
-      var html = "<span>" + d.city + "</span>, <span>" + d.state + ":</span>, <span>"
-      + d.lockdown_method + "</span>";
+      var html = "<span>" + d.city + "</span>, <span>" + d.state + "</span> <span><p>"
+      + d.lockdown_method + "</p></span>";
       tooltip.html(html);
       tooltip
         .style("left", window.pageXOffset + d3.event.x + 12 + "px")
         .style("top", window.pageYOffset + d3.event.y + 12 + "px")
         .transition()
-        .style("opacity", 1);
+        .style("opacity", 1)
     }
 
     function hideTooltip() {
